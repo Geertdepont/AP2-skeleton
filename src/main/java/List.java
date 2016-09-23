@@ -1,11 +1,17 @@
-public class List<E extends Comparable> implements ListInterface<E>{
+import java.lang.reflect.Array;
 
+public class List<E extends Comparable> implements ListInterface<E>{
+	
     private class Node {
 
         E data;
         Node prior,
                 next;
 
+//        public Node(){
+//        	this(null);
+//        }
+        
         public Node(E d) {
             this(d, null, null);
         }
@@ -15,17 +21,22 @@ public class List<E extends Comparable> implements ListInterface<E>{
             this.prior = prior;
             this.next = next;
         }
-
     }
-
+    
+    Node list;
+    
+    List (){
+    	list = new Node(null); //empty list
+    }
+   
     @Override
     public boolean isEmpty() {
-        return false;
+        return list==null;
     }
 
     @Override
     public ListInterface<E> init() {
-        return null;
+    	return this;
     }
 
     @Override
@@ -33,19 +44,38 @@ public class List<E extends Comparable> implements ListInterface<E>{
         return 0;
     }
 
-    @Override
+ 
+    
+    //still needs work to order in place
+	@Override
     public ListInterface<E> insert(E d) {
-        return null;
+    	if(list.data==null || list.prior==null){//
+    		Node node = new Node(d,list,null); //create new node with the data linked to previous
+        	list.next = node;  //link current node to new node
+    		list = node; //update list
+    		return this;
+    	}
+		if(list.data.compareTo(d)>0){
+			list = list.prior;
+			System.out.println("number is smaller");
+		}
+
+    	Node node = new Node(d,list,list.next); //create new node with the data linked to previous
+    	list.next = node;  //link current node to new node
+		list = node; //update list
+    	return this;
     }
 
     @Override
     public E retrieve() {
-        return null;
+        return list.data;
     }
 
     @Override
     public ListInterface<E> remove() {
-        return null;
+    	list.prior.next = list.next;
+    	list = list.prior;
+    	return this;
     }
 
     @Override
@@ -55,26 +85,44 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public boolean goToFirst() {
-        return false;
+        if(list.data==null){
+        	return false;
+        }
+    	while(list.prior.prior!=null){
+        	list = list.prior;
+        }
+    	return list!=null;
     }
 
     @Override
     public boolean goToLast() {
-        return false;
+    	while(list.next!=null){
+        	list = list.next;
+        }
+    	return list.data!=null;
     }
 
     @Override
     public boolean goToNext() {
-        return false;
+        if(list.next!=null){
+        	list = list.next;
+        	return true;
+        }
+    	return false;
     }
 
     @Override
     public boolean goToPrevious() {
-        return false;
+        if(list.prior.data!=null){
+        	list = list.prior;
+        	return true;
+        }
+    	return false;
     }
 
     @Override
     public ListInterface<E> clone() {
         return null;
     }
+    
 }
