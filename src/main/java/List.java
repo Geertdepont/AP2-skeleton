@@ -1,6 +1,5 @@
 import java.lang.reflect.Array;
 
-
 public class List<E extends Comparable> implements ListInterface<E>{
 	
     private class Node {
@@ -50,21 +49,11 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public int size() {
-//    	goToFirst();
-//    	
-//        int counter = 0;
-//        if(list.data!=null){
-//        	counter =1;
-//        }
-//        
-//        while(list.next!=null){
-//        	list= list.next;
-//        	counter +=1;
-//        }
-//        
-//        goToFirst();
-//    	return counter;
     	int size=0;
+    	if(list == null){
+    		return size;
+    	}
+    	
     	if(list!=null){
     		size+=1;
     	}
@@ -96,10 +85,9 @@ public class List<E extends Comparable> implements ListInterface<E>{
 			//number is bigger
 			goToFirst();
 			//System.out.println(current.next);
-			while(current.next!=null && current.next.data.compareTo(d)<0 || current.next!=null ){
+			while(current.next!=null && current.next.data.compareTo(d)<0 ){
 				goToNext();
 			}
-			
 			if(current.next!=null){
 				current.next.prior=new Node(d,current,current.next);
 				current.next=current.next.prior;
@@ -114,19 +102,32 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public E retrieve() {
-//    	if(current==null){
-//    		return null;
-//    	}
-//    	return current.data;
-    	return list!=null ? list.data : null;
+    	return list!=null ? current.data : null;
     }
-
+    
     @Override
     public ListInterface<E> remove() {
-    	list.prior.next = list.next;
-    	list = list.prior;
+    	if(list==null){
+    		return this;
+    	}
+    	if(current.next==null){
+    		if(current.prior!=null){
+    			current.prior.next = null;
+            	current = current.prior;
+    		}
+    		else{
+    			list =null;
+    			current = list;
+    		}
+    	}
+    	else{
+    		current.prior = current.next;
+    		current.next.prior = current.prior;
+    		current = current.prior;
+    	}
     	return this;
     }
+
 
     @Override
     public boolean find(E d) {
@@ -145,7 +146,7 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public boolean goToLast() {
-    	while(current.next!=null){
+    	while(list !=null && current.next!=null){
         	current = current.next;
         }
     	return list!=null;
@@ -153,7 +154,7 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public boolean goToNext() {
-        if(current.next!=null){
+    	if(list !=null && current.next!=null){
         	current = current.next;
         	return true;
         }
@@ -173,6 +174,5 @@ public class List<E extends Comparable> implements ListInterface<E>{
     public ListInterface<E> clone() {
         return null;
     }
-    
     
 }
