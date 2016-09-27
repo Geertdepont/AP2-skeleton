@@ -1,5 +1,6 @@
 import java.lang.reflect.Array;
 
+
 public class List<E extends Comparable> implements ListInterface<E>{
 	
     private class Node {
@@ -80,7 +81,6 @@ public class List<E extends Comparable> implements ListInterface<E>{
     public ListInterface<E> insert(E d) {
 		goToFirst();
 		
-		
 		if(list==null){
 			//list is empty
 			list = new Node(d, null, null);
@@ -89,14 +89,17 @@ public class List<E extends Comparable> implements ListInterface<E>{
 		if(list.data.compareTo(d)>0){
 			//number is smaller
 			list = new Node(d, null, list);
+			list.next.prior = list;
 			current = list;
 		}
 		if(list.data.compareTo(d)<0){
 			//number is bigger
 			goToFirst();
-			while(current.next.data.compareTo(d)<0 || current.next!=null){
+			//System.out.println(current.next);
+			while(current.next!=null && current.next.data.compareTo(d)<0 || current.next!=null ){
 				goToNext();
 			}
+			
 			if(current.next!=null){
 				current.next.prior=new Node(d,current,current.next);
 				current.next=current.next.prior;
