@@ -27,8 +27,12 @@ public class List<E extends Comparable> implements ListInterface<E>{
     Node current;
     
     List (){
-    	list = new Node(null); //empty list
+//    	list = new Node(null); //empty list
+    	
+    	list=null;
     	current = list;
+    	//OR
+//    	init();
     }
    
     @Override
@@ -38,25 +42,37 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public ListInterface<E> init() {
+    	list=null;
+    	current = list;
     	return this;
     }
 
     @Override
     public int size() {
-    	goToFirst();
-    	
-        int counter = 0;
-        if(list.data!=null){
-        	counter =1;
-        }
-        
-        while(list.next!=null){
-        	list= list.next;
-        	counter +=1;
-        }
-        
-        goToFirst();
-    	return counter;
+//    	goToFirst();
+//    	
+//        int counter = 0;
+//        if(list.data!=null){
+//        	counter =1;
+//        }
+//        
+//        while(list.next!=null){
+//        	list= list.next;
+//        	counter +=1;
+//        }
+//        
+//        goToFirst();
+//    	return counter;
+    	int size=0;
+    	if(list!=null){
+    		size+=1;
+    	}
+    	Node k=list;
+    	while(k.next!=null){
+    		k=k.next;
+    		size+=1;
+    	}
+    	return size;
     }
 
  
@@ -72,20 +88,34 @@ public class List<E extends Comparable> implements ListInterface<E>{
 		}
 		if(list.data.compareTo(d)>0){
 			//number is smaller
-			
+			list = new Node(d, null, list);
+			current = list;
 		}
 		if(list.data.compareTo(d)<0){
 			//number is bigger
+			goToFirst();
+			while(current.next.data.compareTo(d)<0 || current.next!=null){
+				goToNext();
+			}
+			if(current.next!=null){
+				current.next.prior=new Node(d,current,current.next);
+				current.next=current.next.prior;
+				goToNext();
+			}else{//current at end of list
+				current.next=new Node(d,current,null);
+				goToNext();
+			}
 		}
 		return this;
     }
 
     @Override
     public E retrieve() {
-    	if(current==null){
-    		return null;
-    	}
-    	return current.data;
+//    	if(current==null){
+//    		return null;
+//    	}
+//    	return current.data;
+    	return list!=null ? list.data : null;
     }
 
     @Override
@@ -104,10 +134,10 @@ public class List<E extends Comparable> implements ListInterface<E>{
     
     @Override
     public boolean goToFirst() {
-    	if(current !=null){
+    	if(list!=null){
     		current = list;
     	}
-  		return current!=null;
+  		return list!=null;
     }
 
     @Override
