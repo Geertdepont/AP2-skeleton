@@ -107,20 +107,19 @@ public class List<E extends Comparable> implements ListInterface<E>{
     
     @Override
     public ListInterface<E> remove() {
-    	if(list==null){
-    		return this;
-    	}
     	if(current.next==null){
     		if(current.prior!=null){
     			current.prior.next = null;
             	current = current.prior;
-    		}
-    		else{
+    		}else{
     			list =null;
     			current = list;
     		}
-    	}
-    	else{
+    	}else if(current.prior==null){
+    		list=list.next;
+    		list.prior=null;
+    		current=list;
+    	}else{
     		current.prior = current.next;
     		current.next.prior = current.prior;
     		current = current.prior;
