@@ -74,8 +74,9 @@ public class List<E extends Comparable> implements ListInterface<E>{
 			//list is empty
 			list = new Node(d, null, null);
 			current = list;
+			return this;
 		}
-		if(list.data.compareTo(d)>0){
+		if(list.data.compareTo(d)>=0){
 			//number is smaller
 			list = new Node(d, null, list);
 			list.next.prior = list;
@@ -107,6 +108,10 @@ public class List<E extends Comparable> implements ListInterface<E>{
     
     @Override
     public ListInterface<E> remove() {
+    	if(list== null){
+    		return null;
+    	}
+    	
     	if(current.next==null){
     		if(current.prior!=null){
     			current.prior.next = null;
@@ -120,9 +125,9 @@ public class List<E extends Comparable> implements ListInterface<E>{
     		list.prior=null;
     		current=list;
     	}else{
-    		current.prior = current.next;
+    		current.prior.next = current.next;
     		current.next.prior = current.prior;
-    		current = current.prior;
+    		current = current.next;
     	}
     	return this;
     }
