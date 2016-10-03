@@ -1,35 +1,48 @@
 /** 
-	 * @element elements of type E
-	 * @structure no structure
-	 * @domain all elements of type E
-	 **/
+ * @element elements of type E
+ * @structure no structure
+ * @domain all unique elements of type E
+ * @constructor - Set <E>();
+ * PRE -
+ * POST An empty set has been created
+ *
+ */
 public interface SetInterface <E>{
-	 /**
-	  * Set <E>()
-	  * PRE -
-	  * POST An empty set has been created
-	  *
-	  */
 	
 	/**
      * @pre -
-     * @post The token 'token' has been added at the end of the TokenList, 
-     *       preserving the previous order.
+     * @post The element "e" has been added to the Set.
      */
     void add(E e);
     
     /**
      * @pre -
-     * @post The token 'token' has been added at the end of the TokenList, 
-     *       preserving the previous order.
+     * @post The element "e" has been removed from the Set.
      */
     void remove(E e);
     
     /**
      * @pre -
-     * @post The token 'token' has been added at the end of the TokenList, 
-     *       preserving the previous order.
+     * @post The union of this set and "set" has been returned
      */
-    E union(E e);
+    SetInterface<E> union(SetInterface<E> set);
+    
+    /**
+     * @pre -
+     * @post The intersection of this set and "set" has been returned
+     */
+    SetInterface<E> intersection(SetInterface<E> set);
+    
+    /**
+     * @pre -
+     * @post The complement of this set and "set" has been returned
+     */
+    SetInterface<E> complement(SetInterface<E> set);
+    
+    /**
+     * @pre -
+     * @post The symmetric difference of this set and "set" has been returned
+     */
+    SetInterface<E> symmetricDifference(SetInterface<E> set);
 
 }
