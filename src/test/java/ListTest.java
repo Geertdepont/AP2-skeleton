@@ -57,6 +57,7 @@ public class ListTest {
         for (int i = 0; i < 200; i++) {
             list.insert(new Letter('a'));
         }
+        //System.out.println(list.size());
         assertEquals("Adding many elements should result in a long list", 201, list.size());
 
         // Remove 1 item -> 200 items left
@@ -151,6 +152,7 @@ public class ListTest {
         // Remove an element in the middle
         list.goToFirst();
         list.goToNext();
+       // System.out.println();
         list.remove();
 
         assertEquals(c, list.retrieve());
