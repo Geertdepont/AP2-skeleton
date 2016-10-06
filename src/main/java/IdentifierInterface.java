@@ -8,7 +8,7 @@
  */
 
 
-public interface IdentifierInterface {
+public interface IdentifierInterface  {
 	
 	
 	/**
@@ -16,5 +16,8 @@ public interface IdentifierInterface {
      * @post The value associated with this identifier has been returned as a String.
      */
 	String getValue();
-	 
+
+
+	
+
 }

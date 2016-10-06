@@ -7,7 +7,7 @@
  * POST An empty set has been created
  *
  */
-public interface SetInterface <E>{
+public interface SetInterface <E extends Comparable<E>>{
 	
 	/**
      * @pre -
@@ -20,6 +20,13 @@ public interface SetInterface <E>{
      * @post The element "e" has been removed from the Set.
      */
     void remove(E e);
+    
+    /**
+     * @pre non empty set
+     * @post The element "e" has been returned from the Set.
+     */
+    void get(E e);
+    
     
     /**
      * @pre -
