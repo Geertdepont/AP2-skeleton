@@ -1,5 +1,6 @@
 
-public class Identifier implements IdentifierInterface, Comparable<Identifier>{
+//public class Identifier implements IdentifierInterface, Comparable<Identifier>{
+public class Identifier implements IdentifierInterface{
 	String value; //consider nameIdentifier vs value
 	
 	Identifier(String value){
@@ -11,8 +12,10 @@ public class Identifier implements IdentifierInterface, Comparable<Identifier>{
 		return value;
 	}
 	
-	public int compareTo(Identifier other) {	
-		return value.compareTo(other.value);
+//	public int compareTo(Identifier other) {	
+//		return value.compareTo(other.value);
+	public int compareTo(IdentifierInterface other) {	
+		return value.compareTo(other.getValue());
 	}
 	
 }

@@ -8,7 +8,8 @@
  */
 
 
-public interface IdentifierInterface  {
+//public interface IdentifierInterface  {
+public interface IdentifierInterface  extends Comparable<IdentifierInterface>{
 	
 	
 	/**
