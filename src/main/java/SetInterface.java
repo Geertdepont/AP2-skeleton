@@ -23,10 +23,25 @@ public interface SetInterface <E extends Comparable<E>>{
     
     /**
      * @pre non empty set
-     * @post The element "e" has been returned from the Set.
+     * @post TRUE element "e" is in the Set.
+     * 		 FALSE element "e" is not in the Set.
      */
-    void get(E e);
+    boolean get(E e);
     
+    
+    /**
+     * @pre -
+     * @post Set of 
+     */
+    E getRandom();
+    
+    
+    
+    /**
+     * @pre -
+     * @post Set of 
+     */
+    SetInterface<E> copy();
     
     /**
      * @pre -

@@ -3,7 +3,6 @@ import java.lang.reflect.Array;
 public class List<E extends Comparable> implements ListInterface<E>{
 	
     private class Node {
-//    	class Node {
 
         E data;
         Node prior,
@@ -24,8 +23,8 @@ public class List<E extends Comparable> implements ListInterface<E>{
         }
     }
     
-    Node head;//we'll rename it to head
-    Node tail;//not implemented yet
+    Node head;
+    Node tail;
     Node current;
     int numberOfElements;
     
@@ -128,22 +127,7 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
 
     @Override
-    public boolean find(E d) {//not implemented yet
-//        if(isEmpty()){
-//        	return false;
-//        }
-//        goToFirst();
-//
-//        while(current.next!=null && current.data.compareTo(d)<0){//d is bigger to list.data){
-//        	current = current.next;
-//        }
-//        if(current.data.compareTo(d)>0){
-//        	return false;
-//        }
-//        else{
-//        	return true;
-//        }
-        
+    public boolean find(E d) {
         if(!goToFirst()){
         	return false;
         }
@@ -165,10 +149,6 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public boolean goToLast() {
-//    	while(head !=null && current.next!=null){
-//        	current = current.next;
-//        }
-//    	return head!=null
     	if(head!=null){
     		current=tail;
     	}
