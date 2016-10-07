@@ -195,8 +195,14 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
 	@Override
 	public ListInterface<E> copy() {
-		// TODO Auto-generated method stub
-		return null;
+		List result=new List();
+		if(goToFirst()){
+			result.insert(current.data);
+			while(goToNext()){
+				result.insert(current.data);
+			}
+		}
+		return result;
 	}
     
 }
