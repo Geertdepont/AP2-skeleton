@@ -1,6 +1,6 @@
-import java.lang.reflect.Array;
+//import java.lang.reflect.Array; //do we need this?
 
-public class List<E extends Comparable> implements ListInterface<E>{
+public class List<E extends Comparable<E>> implements ListInterface<E>{
 	
     private class Node {
 
@@ -8,10 +8,6 @@ public class List<E extends Comparable> implements ListInterface<E>{
         Node prior,
                 next;
 
-//        public Node(){
-//        	this(null);
-//        }
-        
         public Node(E d) {
             this(d, null, null);
         }
@@ -49,13 +45,11 @@ public class List<E extends Comparable> implements ListInterface<E>{
     	return numberOfElements;
     }
 
- 
 	@Override
     public ListInterface<E> insert(E d) {
 		goToFirst();
-		if(head==null){
-			//list is empty
-			current=head = new Node(d, null, null);
+		if(isEmpty()){//list is empty
+			current=head = new Node(d);
 			tail= head;
 		}else if(head.data.compareTo(d)>=0){//d is smaller or equal to head.data
 			current=head = new Node(d, null, head);
@@ -77,20 +71,22 @@ public class List<E extends Comparable> implements ListInterface<E>{
     }
 //    @Override
     public ListInterface<E> insert2(E d) {
-		if(head==null){//list is empty
-			tail=current=head=new Node(d, null, null);
+		if(isEmpty()){
+			tail=current=head=new Node(d);
 		}else{
 			find(d);
-			if(current.prior==null && d.compareTo(current.data)<=0){//d<=head
+			if(current.prior==null && d.compareTo(current.data)<=0){//d<=head; the second check is to determine on a list with only 1 element where to put the new
 				current=head=new Node(d,null,head);
 				head.next.prior=head;
-			}else if(current.next!=null){//in between
+			}else{
 				if(current.data.compareTo(d)==0){//insert before current if current.data=d
 					goToPrevious();
 				}
-				current=current.next=current.next.prior=new Node(d,current,current.next);
-			}else{//end of list
-				tail=current=current.next=new Node(d,current,null);
+				if(current.next!=null){//in between
+					current=current.next=current.next.prior=new Node(d,current,current.next);
+				}else{//end of list
+					tail=current=current.next=new Node(d,current,null);
+				}
 			}
 		}
 		numberOfElements+=1;
@@ -99,12 +95,12 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public E retrieve() {
-    	return head!=null ? current.data : null;
+    	return !isEmpty() ? current.data : null;
     }
     
     @Override
     public ListInterface<E> remove() {
-    	if(head!=null){
+    	if(!isEmpty()){
     		if(current.next==null){//current at end of list
         		if(current.prior!=null){//list has >1 element
         			current.prior.next = null;
@@ -141,23 +137,23 @@ public class List<E extends Comparable> implements ListInterface<E>{
     
     @Override
     public boolean goToFirst() {
-    	if(head!=null){
+    	if(!isEmpty()){
     		current = head;
     	}
-  		return head!=null;
+  		return !isEmpty();
     }
 
     @Override
     public boolean goToLast() {
-    	if(head!=null){
+    	if(!isEmpty()){
     		current=tail;
     	}
-    	return head!=null;
+    	return !isEmpty();
     }
 
     @Override
     public boolean goToNext() {
-    	if(head!=null && current.next!=null){
+    	if(!isEmpty() && current.next!=null){
         	current = current.next;
         	return true;
         }
@@ -166,7 +162,7 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
     @Override
     public boolean goToPrevious() {
-        if(head!=null && current.prior!=null){
+        if(!isEmpty() && current.prior!=null){
         	current = current.prior;
         	return true;
         }
@@ -175,7 +171,7 @@ public class List<E extends Comparable> implements ListInterface<E>{
 
 	@Override
 	public ListInterface<E> copy() {
-		List result=new List();
+		List<E> result=new List<E>();
 		if(goToFirst()){
 			result.insert(current.data);
 			while(goToNext()){
