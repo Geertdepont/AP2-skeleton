@@ -24,129 +24,17 @@ public class Main {
 		return in.hasNext("[a-zA-Z]");
 	}
 
-    private void start() {
-        // Create a scanner on System.in
-        
-        // While there is input, read line and parse it.
-    	Scanner programScanner=new Scanner(System.in);
-    	try{
-    		program(programScanner);
-    	}catch(APException e){
-    		throw new Error(e);
-    	}
-    }
-    
     void eoln(Scanner input) throws APException{
     	if(input.hasNext()){
     		throw new APException("there is still something here...");
     	}
     }
     
-    
-    void program(Scanner input) throws APException{
-    	while(input.hasNext()){ //Reads the whole file? 
-    		statement(input);
-    	}
-    }
-    
-    void statement(Scanner input) throws APException{
-    	if(nextCharIsLetter(input)){
-//    		assignment(new Scanner(input.nextLine()));
-    	}else if(nextCharIs(input,'?')){
-//    		printStatement(input);
-    	}else if(nextCharIs(input,'/')){
-//    		comment(input);
-    	}else{
-    		throw new APException("something");
-    	}
-    }
-    
-    void assignment(Scanner input) throws APException{
-    	//identifier(input);
-    	if(nextCharIs(input,'=')){
-    		nextChar(input);
-    	}else{
-    		throw new APException("character after identifier should be an equal sign");
-    	}
-    	//expression(input);
-    	eoln(input);
-    	
-    }
-    
-    void printStatement(Scanner input) throws APException{
-    	if(nextCharIs(input,'?')){
-    		nextChar(input);
-    	}else{
-    		throw new APException("? missing");
-    	}
-    	//expression(input);
-    	eoln(input);
-    }
-    
-    void comment(Scanner input) throws APException{
-    	if(nextCharIs(input,'/')){
-    		nextChar(input);
-    	}else{
-    		throw new APException("? missing");
-    	}
-    	input.nextLine();
-    	eoln(input);
-    }
-    
-    
-    Identifier identifier(Scanner input) throws APException{
-    	StringBuffer identifier = new StringBuffer();
-    	
-    	if(nextCharIsLetter(input)){
-//    		identifier.append(letter(input));
-    	}else{
-    		throw new APException("identifier has to start with a letter");
-    	}
-    	while(nextCharIsLetter(input) || nextCharIsDigit(input)){
-  //  		identifier.append(letter(input));
-    	}
-    	return new Identifier(identifier.toString());
-    }
-
-    void expression(Scanner input)throws APException{
-//    	term(input)
-    	while(nextIsAdditiveOperator(input)){
-    		additiveOperator(input);
-    		//term(input);
-    	}
-    }
-    
-    void term(Scanner input)throws APException{
-//    	factor(input);
-//		 
-    	while(nextIsMultiplicativeOperator(input)){
-    		multiplicativeOperator(input);
-    		//factor(input);
-    	}
-    }
-    
-    void factor(Scanner input)throws APException{
-	    if(nextCharIsLetter(input)){
-	//		identifier(input)
-		}
-		else if(nextCharIs(input, '(')){
-	//		complex factor(input)
-		}
-		else if(nextCharIs(input,'{')){
-	//		set(input)
-		}
-		else{
-			throw new APException("not a factor");
-		}
-    }
-    
-    
-    void additiveOperator(Scanner input){
-    	
-    }
-    
-    void multiplicativeOperator(Scanner input){
-    	
+    void character (Scanner input, char c) throws APException{
+        if (!nextCharIs(input, c)){
+    	throw new APException("");
+        }
+        nextChar(input);
     }
     
     boolean nextIsAdditiveOperator(Scanner input){
@@ -157,7 +45,158 @@ public class Main {
     	return nextCharIs(input, '*');
     }
     
+    void program(Scanner input) throws APException{
+    	while(input.hasNext()){ //Reads the whole file? 
+    		statement(input);
+    	}
+    }
     
+    void statement(Scanner input) throws APException{
+    	String statement=input.nextLine();
+    	Scanner statementScanner=new Scanner(statement);
+    	if(nextCharIsLetter(statementScanner)){
+    		assignment(statementScanner);
+    		printStatement(statementScanner);
+    		comment(statementScanner);
+    	}else{
+    		throw new APException("Misformed statement. A statement has to begin with a '?', '/' or an identifier\n");
+    	}
+    }
+    
+    void assignment(Scanner input) throws APException{
+    	Identifier identifier=identifier(input);
+    	expression(input);
+    	eoln(input);
+    }
+    
+    void printStatement(Scanner input) throws APException{
+    	expression(input);
+    	eoln(input);
+    }
+    
+    void comment(Scanner input) throws APException{
+    	input.nextLine();
+    	eoln(input);
+    }
+    
+    Identifier identifier(Scanner input) throws APException{
+    	StringBuffer identifier = new StringBuffer();
+    	
+    	if(nextCharIsLetter(input)){
+    		identifier.append(letter(input));
+    	}else{
+    		throw new APException("identifier has to start with a letter");
+    	}
+    	while(nextCharIsLetter(input) || nextCharIsDigit(input)){
+    		if(nextCharIsLetter(input)){
+    			identifier.append(letter(input));
+    		}else{
+    			identifier.append(number(input));
+    		}
+    	}
+    	return new Identifier(identifier.toString());
+    }
+
+    void expression(Scanner input) throws APException{
+    	term(input);
+    	while(nextIsAdditiveOperator(input)){
+    		additiveOperator(input);
+    		term(input);
+    	}
+    }
+    
+    void term(Scanner input) throws APException{
+    	factor(input);
+    	while(nextIsMultiplicativeOperator(input)){
+    		multiplicativeOperator(input);
+    		factor(input);
+    	}
+    }
+    
+    void factor(Scanner input) throws APException{
+	    if(nextCharIsLetter(input)){
+			identifier(input);
+		}else if(nextCharIs(input, '(')){
+			complexFactor(input);
+			set(input);
+		}else{
+			throw new APException("Misformed factor. A factor has to begin with an identifier, '(' or '{'\n");
+		}
+    }
+    
+    void complexFactor(Scanner input) throws APException{
+    	expression(input);
+    }
+    
+    void set(Scanner input) throws APException{
+    	rowNaturalNumbers(input);
+    }
+    
+    void rowNaturalNumbers(Scanner input) throws APException{
+    	if(nextCharIsDigit(input)){
+    		naturalNumber(input);
+    			naturalNumber(input);
+    		}
+    	}
+    }
+    
+    char additiveOperator(Scanner input) throws APException{
+    		throw new APException("");
+    	}
+    	return nextChar(input);
+    }
+    
+    char multiplicativeOperator(Scanner input) throws APException{
+    		throw new APException("");
+    	}
+    	return nextChar(input);
+    }
+    
+    int naturalNumber(Scanner input) throws APException{
+    }
+    
+    int positiveNumber(Scanner input) throws APException{
+    	StringBuffer result=new StringBuffer();
+    	result.append(notZero(input));
+    	while(nextCharIsDigit(input)){
+    		result.append(number(input));
+    	}
+    	return Integer.parseInt(result.toString());
+    }
+    
+    int number(Scanner input) throws APException{
+    }
+    
+    int zero(Scanner input) throws APException{
+    		throw new APException("");
+    	}
+    	return Character.getNumericValue(nextChar(input));
+    }
+    
+	int notZero(Scanner input) throws APException{
+		if(!input.hasNext("[1-9]")){
+			throw new APException("");
+		}
+		return Character.getNumericValue(nextChar(input));
+	}
+    
+    char letter(Scanner input) throws APException{
+    	if(!nextCharIsLetter(input)){
+			throw new APException("");
+		}
+    	return nextChar(input);
+    }
+    
+    private void start() {
+        // Create a scanner on System.in
+        // While there is input, read line and parse it.
+    	Scanner programScanner=new Scanner(System.in);
+    	try{
+    		program(programScanner);
+    	}catch(APException e){
+    		throw new Error(e);
+    	}
+    }
     
     public static void main(String[] argv) {
         new Main().start();
