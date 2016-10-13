@@ -56,7 +56,9 @@ public class Main {
     	Scanner statementScanner=new Scanner(statement);
     	if(nextCharIsLetter(statementScanner)){
     		assignment(statementScanner);
+    	}else if(nextCharIs(statementScanner, '?')){
     		printStatement(statementScanner);
+    	}else if(nextCharIs(statementScanner, '/')){
     		comment(statementScanner);
     	}else{
     		throw new APException("Misformed statement. A statement has to begin with a '?', '/' or an identifier\n");
@@ -65,16 +67,19 @@ public class Main {
     
     void assignment(Scanner input) throws APException{
     	Identifier identifier=identifier(input);
+    	character(input, '=');
     	expression(input);
     	eoln(input);
     }
     
     void printStatement(Scanner input) throws APException{
+    	character(input, '?');
     	expression(input);
     	eoln(input);
     }
     
     void comment(Scanner input) throws APException{
+    	character(input, '/');
     	input.nextLine();
     	eoln(input);
     }
@@ -118,6 +123,7 @@ public class Main {
 			identifier(input);
 		}else if(nextCharIs(input, '(')){
 			complexFactor(input);
+		}else if(nextCharIs(input, '{')){
 			set(input);
 		}else{
 			throw new APException("Misformed factor. A factor has to begin with an identifier, '(' or '{'\n");
@@ -125,34 +131,43 @@ public class Main {
     }
     
     void complexFactor(Scanner input) throws APException{
+    	character(input, '(');
     	expression(input);
+    	character(input, ')');
     }
     
     void set(Scanner input) throws APException{
+    	character(input, '{');
     	rowNaturalNumbers(input);
+    	character(input, '}');
     }
     
     void rowNaturalNumbers(Scanner input) throws APException{
     	if(nextCharIsDigit(input)){
     		naturalNumber(input);
+    		while(nextCharIs(input, ',')){
+    			character(input, ',');
     			naturalNumber(input);
     		}
     	}
     }
     
     char additiveOperator(Scanner input) throws APException{
+    	if(!nextCharIs(input, '+') && !nextCharIs(input, '|') && !nextCharIs(input, '-')){
     		throw new APException("");
     	}
     	return nextChar(input);
     }
     
     char multiplicativeOperator(Scanner input) throws APException{
+    	if(!nextCharIs(input, '*')){
     		throw new APException("");
     	}
     	return nextChar(input);
     }
     
     int naturalNumber(Scanner input) throws APException{
+    	return nextCharIs(input, '0') ? zero(input):positiveNumber(input);
     }
     
     int positiveNumber(Scanner input) throws APException{
@@ -165,9 +180,11 @@ public class Main {
     }
     
     int number(Scanner input) throws APException{
+    	return nextCharIs(input, '0') ? zero(input) : notZero(input);
     }
     
     int zero(Scanner input) throws APException{
+    	if(!nextCharIs(input, '0')){
     		throw new APException("");
     	}
     	return Character.getNumericValue(nextChar(input));
