@@ -134,8 +134,9 @@ public class Main {
     	Set<BigInteger> result = term(input);
     	
     	while(nextIsAdditiveOperator(input)){
-    		Set<BigInteger> temp= term(input);
     		char operation = additiveOperator(input);
+    		Set<BigInteger> temp= term(input);
+    		
     		if(operation=='+'){
     			result = (Set<BigInteger>) result.union(temp);
     		}
@@ -168,6 +169,7 @@ public class Main {
     	if(nextCharIsLetter(input, true)){
     		
     		Identifier key =identifier(input);
+    		
 			if(!hashmap.containsKey(key)){
 				result =  new Set<BigInteger>();
 			}
