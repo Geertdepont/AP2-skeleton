@@ -22,7 +22,7 @@ public interface IdentifierInterface  extends Comparable<IdentifierInterface>{
      * @pre -
      * @post
      */
-	public boolean equals(IdentifierInterface input);
+	public boolean equals(Object rhs);
 	
 
 }

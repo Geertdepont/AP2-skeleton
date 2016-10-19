@@ -61,8 +61,6 @@ public class Main {
     }
     
     void printSet(Set<BigInteger> input){
-//    	System.out.println("this hap");
-    	System.out.println(input.isEmpty());
     	Set<BigInteger> temp=(Set<BigInteger>) input.copy();
     	while(!temp.isEmpty()){
     		BigInteger element=temp.getRandom();
@@ -105,8 +103,14 @@ public class Main {
     void assignment(Scanner input) throws APException{
     	Identifier key=identifier(input);
     	character(input, '=');
-       	Set<BigInteger> value=expression(input);
-       	calculatorHashMap.put(key, value);
+    	Set<BigInteger> value;
+    	try{
+    		value=expression(input);
+    	}catch (APException e){
+    		throw new APException("Misformed expression");
+    	}
+    	System.out.println("test");
+    	calculatorHashMap.put(key, value);
     	eoln(input);
     }
     
