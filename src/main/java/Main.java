@@ -4,7 +4,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Main {
-	HashMap<Identifier, Set<BigInteger>> hashmap;
+	HashMap<Identifier, Set<BigInteger>> calculatorHashMap;
 	
 	// Method to read 1 character.
 	char nextChar (Scanner in, boolean skipWhiteSpace) {
@@ -60,6 +60,18 @@ public class Main {
         nextChar(input, true);
     }
     
+    void printSet(Set<BigInteger> input){
+//    	System.out.println("this hap");
+//    	System.out.println(input.isEmpty());
+    	Set<BigInteger> temp=(Set<BigInteger>) input.copy();
+    	while(!temp.isEmpty()){
+    		BigInteger element=temp.getRandom();
+    		temp.remove(element);
+    		System.out.printf("%s ",element.toString());
+    	}
+    	System.out.printf("\n");
+    }
+    
     boolean nextIsAdditiveOperator(Scanner input){
     	return nextCharIs(input, '+', true) || nextCharIs(input, '|', true) || nextCharIs(input, '-', true); 
     }
@@ -78,7 +90,7 @@ public class Main {
     void statement(Scanner input) throws APException{
     	String statement=input.nextLine();
     	Scanner statementScanner=new Scanner(statement);
-
+    	
     	if(nextCharIsLetter(statementScanner, true)){
     		assignment(statementScanner);
     	}else if(nextCharIs(statementScanner, '?', true)){
@@ -91,16 +103,16 @@ public class Main {
     }
     
     void assignment(Scanner input) throws APException{
-    	Identifier identifier=identifier(input);
+    	Identifier key=identifier(input);
     	character(input, '=');
-       	expression(input);
-       	//hashMap.put(identifier, expressionResult)
+       	Set<BigInteger> value=expression(input);
+       	calculatorHashMap.put(key, value);
     	eoln(input);
     }
     
     void printStatement(Scanner input) throws APException{
     	character(input, '?');
-    	expression(input);
+    	printSet(expression(input));
     	eoln(input);
     }
     
@@ -113,7 +125,7 @@ public class Main {
     }
     
     Identifier identifier(Scanner input) throws APException{
-    	StringBuffer identifier = new StringBuffer();
+    	StringBuffer identifier=new StringBuffer();
     	
     	if(nextCharIsLetter(input, true)){
     		identifier.append(letter(input));
@@ -131,78 +143,72 @@ public class Main {
     }
 
     Set<BigInteger> expression(Scanner input) throws APException{
-    	Set<BigInteger> result = term(input);
+    	Set<BigInteger> result=term(input);
     	
     	while(nextIsAdditiveOperator(input)){
-    		char operation = additiveOperator(input);
-    		Set<BigInteger> temp= term(input);
-    		
+    		char operation=additiveOperator(input);
+    		Set<BigInteger> temp=term(input);
     		if(operation=='+'){
-    			result = (Set<BigInteger>) result.union(temp);
+    			result=(Set<BigInteger>) result.union(temp);
     		}
     		else if(operation=='|'){
-    			result = (Set<BigInteger>) result.symmetricDifference(temp);
+    			result=(Set<BigInteger>) result.symmetricDifference(temp);
     		}
-    		else if(operation=='−'){
-    			result = (Set<BigInteger>) result.complement(temp);
+    		else if(operation=='-'){
+    			result=(Set<BigInteger>) result.complement(temp);
     		}
-    		
     	}
-
     	return result;
     }
     
     Set<BigInteger> term(Scanner input) throws APException{
-    	Set <BigInteger> result = factor(input);
+    	Set<BigInteger> result=factor(input);
+    	
     	while(nextIsMultiplicativeOperator(input)){
     		multiplicativeOperator(input);
-    		Set <BigInteger>temp = factor(input);
-    		result = (Set<BigInteger>) result.intersection(temp);
+    		Set<BigInteger>temp=factor(input);
+    		result=(Set<BigInteger>) result.intersection(temp);
     	}
     	return result;
     }
     
-    Set <BigInteger>factor(Scanner input) throws APException{
+    Set<BigInteger> factor(Scanner input) throws APException{
+    	Set<BigInteger> result;
     	
-    	
-    	Set <BigInteger>result;
     	if(nextCharIsLetter(input, true)){
-    		
-    		Identifier key =identifier(input);
-    		
-			if(!hashmap.containsKey(key)){
-				result =  new Set<BigInteger>();
+    		Identifier key=identifier(input);
+			if(!calculatorHashMap.containsKey(key)){
+				result=new Set<BigInteger>();
 			}
 			else{
-				result= hashmap.get(key);
+				result=calculatorHashMap.get(key);
 			}
 		}else if(nextCharIs(input, '(', true)){
-			result = complexFactor(input);
+			result=complexFactor(input);
 		}else if(nextCharIs(input, '{', true)){
-			result= set(input);
+			result=set(input);
 		}else{
 			throw new APException("Misformed factor. A factor has to begin with an identifier, '(' or '{'");
 		}
     	return result;
     }
     
-    Set <BigInteger>complexFactor(Scanner input) throws APException{
+    Set<BigInteger> complexFactor(Scanner input) throws APException{
     	character(input, '(');
-    	Set <BigInteger>result = expression(input);
+    	Set<BigInteger> result=expression(input);
     	character(input, ')');
-    	
     	return result;
     }
     
-    Set <BigInteger>set(Scanner input) throws APException{
+    Set<BigInteger> set(Scanner input) throws APException{
     	character(input, '{');
-    	Set result = rowNaturalNumbers(input);
+    	Set<BigInteger> result=rowNaturalNumbers(input);
     	character(input, '}');
     	return result;
     }
     
-    Set <BigInteger> rowNaturalNumbers(Scanner input) throws APException{
-    	Set result = new Set();
+    Set<BigInteger> rowNaturalNumbers(Scanner input) throws APException{
+    	Set<BigInteger> result=new Set<BigInteger>();
     	if(nextCharIsDigit(input, true)){
     		result.add(naturalNumber(input));
     		while(nextCharIs(input, ',', true)){
@@ -210,8 +216,6 @@ public class Main {
     			result.add(naturalNumber(input));
     		}
     	}
-
-    	
     	return result;
     }
     
@@ -271,6 +275,7 @@ public class Main {
         // Create a scanner on System.in
         // While there is input, read line and parse it.
     	Scanner programScanner=new Scanner(System.in);
+    	calculatorHashMap=new HashMap<Identifier, Set<BigInteger>>();
     	try{
     		program(programScanner);
     	}catch(APException e){

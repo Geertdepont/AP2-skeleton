@@ -31,6 +31,14 @@ public interface SetInterface <E extends Comparable<E>>{
     
     /**
      * @pre -
+     * @post TRUE the Set is empty.
+     * 		 FALSE the Set is not empty.
+     */
+    boolean isEmpty();
+    
+    
+    /**
+     * @pre -
      * @post Set of 
      */
     E getRandom();

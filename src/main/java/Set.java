@@ -86,4 +86,9 @@ public class Set<E extends Comparable <E>> implements SetInterface<E>{
 		return new Set<E>(setList.copy());
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return setList.isEmpty();
+	}
+
 }
