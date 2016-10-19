@@ -17,8 +17,12 @@ public interface IdentifierInterface  extends Comparable<IdentifierInterface>{
      * @post The value associated with this identifier has been returned as a String.
      */
 	String getValue();
-
-
+	
+	/**
+     * @pre -
+     * @post
+     */
+	public boolean equals(IdentifierInterface input);
 	
 
 }

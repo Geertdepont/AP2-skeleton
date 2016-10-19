@@ -62,7 +62,7 @@ public class Main {
     
     void printSet(Set<BigInteger> input){
 //    	System.out.println("this hap");
-//    	System.out.println(input.isEmpty());
+    	System.out.println(input.isEmpty());
     	Set<BigInteger> temp=(Set<BigInteger>) input.copy();
     	while(!temp.isEmpty()){
     		BigInteger element=temp.getRandom();

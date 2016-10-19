@@ -18,4 +18,7 @@ public class Identifier implements IdentifierInterface{
 		return value.compareTo(other.getValue());
 	}
 	
+	public boolean equals(IdentifierInterface input){
+		return this.value.equals(input.getValue());
+	}
 }
