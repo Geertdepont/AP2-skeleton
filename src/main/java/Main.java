@@ -6,28 +6,22 @@ import java.util.regex.Pattern;
 public class Main {
 	HashMap<Identifier, Set<BigInteger>> calculatorHashMap;
 	
-	// Method to read 1 character.
-	char nextChar (Scanner in, boolean skipWhiteSpace) {
+	char nextChar (Scanner in, boolean skipWhiteSpace){
 		skipWhiteSpace(in,skipWhiteSpace);
 		return in.next().charAt(0);
 	}
-	// Method to check if the next character to be read when
-	// calling nextChar() is equal to the provided character.
-	boolean nextCharIs(Scanner in, char c, boolean skipWhiteSpace) {
+
+	boolean nextCharIs(Scanner in, char c, boolean skipWhiteSpace){
 		skipWhiteSpace(in,skipWhiteSpace);
 		return in.hasNext(Pattern.quote(c+""));
 	}
 	
-	// Method to check if the next character to be read when
-	// calling nextChar() is a digit.
-	boolean nextCharIsDigit (Scanner in, boolean skipWhiteSpace) {
+	boolean nextCharIsDigit (Scanner in, boolean skipWhiteSpace){
 		skipWhiteSpace(in,skipWhiteSpace);
 		return in.hasNext("[0-9]");
 	}
 	
-	// Method to check if the next character to be read when
-	// calling nextChar() is a letter.
-	boolean nextCharIsLetter (Scanner in, boolean skipWhiteSpace) {
+	boolean nextCharIsLetter (Scanner in, boolean skipWhiteSpace){
 		skipWhiteSpace(in,skipWhiteSpace);
 		return in.hasNext("[a-zA-Z]");
 	}
@@ -43,19 +37,19 @@ public class Main {
 
     void eoln(Scanner input) throws APException{
     	if(input.hasNext()){
-    		throw new APException("expected end-of-line");
+    		throw new APException("Error: Expected end-of-line");
     	}
     }
     
     void eof(Scanner input) throws APException{
     	if(input.hasNext()){
-    		throw new APException("expected end-of-file");
+    		throw new APException("Error: Expected end-of-file");
     	}
     }
     
     void character (Scanner input, char c) throws APException{
     	if (!nextCharIs(input, c, true)){
-    	throw new APException("The next character is not "+c);
+    	throw new APException("Error: The next character is not "+c);
         }
         nextChar(input, true);
     }
@@ -79,10 +73,10 @@ public class Main {
     }
     
     void program(Scanner input) throws APException{
-    	while(input.hasNextLine()){ //Reads the whole file? 
+    	while(input.hasNextLine()){
     		statement(input);
     	}
-    	eof(input);//do we need this? (the EBNF implies we need it, but it will never throw the exception)
+    	eof(input);
     }
     
     void statement(Scanner input) throws APException{
@@ -96,21 +90,21 @@ public class Main {
     	}else if(nextCharIs(statementScanner, '/', true)){
     		comment(statementScanner);
     	}else{
-    		throw new APException("Misformed statement. A statement has to begin with a '?', '/' or an identifier");
+    		throw new APException("Error: Misformed statement. A statement has to begin with a '?', '/' or an identifier");
     	}
     }
     
     void assignment(Scanner input) throws APException{
     	Identifier key=identifier(input);
-    	character(input, '=');
-    	Set<BigInteger> value;
     	try{
-    		value=expression(input);
-    		eoln(input);
-    		calculatorHashMap.put(key, value);
+    		character(input, '=');
     	}catch (APException e){
-    		throw new APException("Misformed expression");
+    		throw new APException("Error: Expected equals sign (=)");
     	}
+    	Set<BigInteger> value;
+		value=expression(input);
+		eoln(input);
+		calculatorHashMap.put(key, value);
     }
     
     void printStatement(Scanner input) throws APException{
@@ -122,7 +116,7 @@ public class Main {
     
     void comment(Scanner input) throws APException{
     	character(input, '/');
-    	if(input.hasNextLine()){//to allow an empty line following the '/' ('/' followed IMMEDIATELY by <eol>)
+    	if(input.hasNextLine()){
     		input.nextLine();
     	}
     	eoln(input);
@@ -134,7 +128,7 @@ public class Main {
     	if(nextCharIsLetter(input, true)){
     		identifier.append(letter(input));
     	}else{
-    		throw new APException("identifier has to start with a letter");
+    		throw new APException("Error: Identifier has to start with a letter");
     	}
     	while(nextCharIsLetter(input, false) || nextCharIsDigit(input, false)){
     		if(nextCharIsLetter(input, false)){
@@ -182,7 +176,7 @@ public class Main {
     	if(nextCharIsLetter(input, true)){
     		Identifier key=identifier(input);
 			if(!calculatorHashMap.containsKey(key)){
-				throw new APException("undefined variable");
+				throw new APException("Error: Undefined variable");
 			}
 			else{
 				result=calculatorHashMap.get(key);
@@ -192,7 +186,7 @@ public class Main {
 		}else if(nextCharIs(input, '{', true)){
 			result=set(input);
 		}else{
-			throw new APException("Misformed factor. A factor has to begin with an identifier, '(' or '{'");
+			throw new APException("Error: Misformed factor. A factor has to begin with an identifier, '(' or '{'");
 		}
     	return result;
     }
@@ -225,14 +219,14 @@ public class Main {
     
     char additiveOperator(Scanner input) throws APException{
     	if(!nextCharIs(input, '+', true) && !nextCharIs(input, '|', true) && !nextCharIs(input, '-', true)){
-    		throw new APException("is not additive operator sign");
+    		throw new APException("Error: Expected additive operator sign (+, | or -)");
     	}
     	return nextChar(input, true);
     }
     
     char multiplicativeOperator(Scanner input) throws APException{
     	if(!nextCharIs(input, '*', true)){
-    		throw new APException("is not multiplication sign");
+    		throw new APException("Error: Expected a multiplicative operator sign (*)");
     	}
     	return nextChar(input, true);
     }
@@ -256,52 +250,39 @@ public class Main {
     
     String zero(Scanner input) throws APException{
     	if(!nextCharIs(input, '0', false)){
-    		throw new APException("is not zero");
+    		throw new APException("Error: Expected a zero (0)");
     	}
     	return "" + nextChar(input, false);
     }
     
 	String notZero(Scanner input) throws APException{
 		if(!input.hasNext("[1-9]")){
-			throw new APException("is not value bewteen 1-9");
+			throw new APException("Error: Expected a number (1-9)");
 		}
 		return "" + nextChar(input, false);
 	}
     
     char letter(Scanner input) throws APException{
     	if(!nextCharIsLetter(input, false)){
-			throw new APException("is not a letter");
+			throw new APException("Error: Expected a letter");
 		}
     	return nextChar(input, false);
     }
     
-    private void start() {
-        // Create a scanner on System.in
-        // While there is input, read line and parse it.
+    private void start(){
     	Scanner programScanner=new Scanner(System.in);
-    	if(calculatorHashMap==null){
-    		calculatorHashMap=new HashMap<Identifier, Set<BigInteger>>();
-    	}
-//    	try{
-//    		program(programScanner);
-//    	}catch(APException e){
-////    		throw new Error(e);
-//    		System.out.println(e);
-//    		start();
-//    	}
+		calculatorHashMap=new HashMap<Identifier, Set<BigInteger>>();
     	
     	while(programScanner.hasNextLine()){
     		try{
         		program(programScanner);
         	}catch(APException e){
-//        		throw new Error(e);
         		System.out.println(e);
-//        		start();
         	}
     	}
     }
     
-    public static void main(String[] argv) {
+    public static void main(String[] argv){
         new Main().start();
     }
 }

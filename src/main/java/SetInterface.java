@@ -1,77 +1,74 @@
 /** 
- * @element elements of type E
- * @structure no structure
- * @domain all unique elements of type E
+ * @elements : elements of type E
+ * @structure : no structure
+ * @domain : all unique elements of type E
+ * 
  * @constructor - Set <E>();
  * PRE -
- * POST An empty set has been created
+ * POST - An empty set has been created
  *
  */
 public interface SetInterface <E extends Comparable<E>>{
 	
 	/**
-     * @pre -
-     * @post The element "e" has been added to the Set.
+     * @precondition -
+     * @postcondition - The element e has been added to the Set.
      */
     void add(E e);
     
     /**
-     * @pre -
-     * @post The element "e" has been removed from the Set.
+     * @precondition -
+     * @postcondition - The element e has been removed from the Set.
      */
     void remove(E e);
     
     /**
-     * @pre non empty set
-     * @post TRUE element "e" is in the Set.
-     * 		 FALSE element "e" is not in the Set.
-     */
-    boolean get(E e);
-    
-    
-    /**
-     * @pre -
-     * @post TRUE the Set is empty.
+     * @precondition -
+     * @postcondition - TRUE the Set is empty.
      * 		 FALSE the Set is not empty.
      */
     boolean isEmpty();
     
+    /**
+     * @precondition -
+     * @postcondition - TRUE: The set contains element e
+     * 		FALSE: The set does not contain element e
+     */
+    boolean contains(E e);
     
     /**
-     * @pre -
-     * @post Set of 
+     * @precondition - The set is not empty.
+     * @postcondition - A random element from the set has been returned 
      */
     E getRandom();
     
-    
-    
     /**
-     * @pre -
-     * @post Set of 
+     * @precondition -
+     * @postcondition - A copy of the set has been returned 
      */
     SetInterface<E> copy();
     
     /**
-     * @pre -
-     * @post The union of this set and "set" has been returned
+     * @precondition -
+     * @postcondition - The union of this set and "set" has been returned
      */
     SetInterface<E> union(SetInterface<E> set);
     
     /**
-     * @pre -
-     * @post The intersection of this set and "set" has been returned
+     * @precondition -
+     * @postcondition - The intersection of this set and "set" has been returned
      */
     SetInterface<E> intersection(SetInterface<E> set);
     
     /**
-     * @pre -
-     * @post The complement of this set and "set" has been returned
+     * @precondition -
+     * @postcondition - The complement of this set and "set" has been returned
      */
     SetInterface<E> complement(SetInterface<E> set);
     
     /**
-     * @pre -
-     * @post The symmetric difference of this set and "set" has been returned
+     * @precondition -
+     * @postcondition - The symmetric difference of this set and "set" has been returned
      */
     SetInterface<E> symmetricDifference(SetInterface<E> set);
 
