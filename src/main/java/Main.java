@@ -106,18 +106,18 @@ public class Main {
     	Set<BigInteger> value;
     	try{
     		value=expression(input);
+    		eoln(input);
+    		calculatorHashMap.put(key, value);
     	}catch (APException e){
     		throw new APException("Misformed expression");
     	}
-    	System.out.println("test");
-    	calculatorHashMap.put(key, value);
-    	eoln(input);
     }
     
     void printStatement(Scanner input) throws APException{
     	character(input, '?');
-    	printSet(expression(input));
+    	Set<BigInteger> set=expression(input);
     	eoln(input);
+    	printSet(set);
     }
     
     void comment(Scanner input) throws APException{
@@ -182,7 +182,7 @@ public class Main {
     	if(nextCharIsLetter(input, true)){
     		Identifier key=identifier(input);
 			if(!calculatorHashMap.containsKey(key)){
-				result=new Set<BigInteger>();
+				throw new APException("undefined variable");
 			}
 			else{
 				result=calculatorHashMap.get(key);
@@ -279,13 +279,25 @@ public class Main {
         // Create a scanner on System.in
         // While there is input, read line and parse it.
     	Scanner programScanner=new Scanner(System.in);
-    	calculatorHashMap=new HashMap<Identifier, Set<BigInteger>>();
-    	try{
-    		program(programScanner);
-    	}catch(APException e){
-//    		throw new Error(e);
-    		System.out.println(e+"\n");
-    		start();
+    	if(calculatorHashMap==null){
+    		calculatorHashMap=new HashMap<Identifier, Set<BigInteger>>();
+    	}
+//    	try{
+//    		program(programScanner);
+//    	}catch(APException e){
+////    		throw new Error(e);
+//    		System.out.println(e);
+//    		start();
+//    	}
+    	
+    	while(programScanner.hasNextLine()){
+    		try{
+        		program(programScanner);
+        	}catch(APException e){
+//        		throw new Error(e);
+        		System.out.println(e);
+//        		start();
+        	}
     	}
     }
     
