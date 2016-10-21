@@ -1,10 +1,22 @@
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Main {
+	
 	HashMap<Identifier, Set<BigInteger>> calculatorHashMap;
+	
+	PrintStream out;
+	InputStream in;
+	
+	Main(){
+		out=System.out;
+		in=System.in;
+		calculatorHashMap=new HashMap<Identifier, Set<BigInteger>>();
+	}
 	
 	char nextChar (Scanner in, boolean skipWhiteSpace){
 		skipWhiteSpace(in,skipWhiteSpace);
@@ -59,9 +71,9 @@ public class Main {
     	while(!temp.isEmpty()){
     		BigInteger element=temp.getRandom();
     		temp.remove(element);
-    		System.out.printf("%s ",element.toString());
+    		out.printf("%s ",element.toString());
     	}
-    	System.out.printf("\n");
+    	out.printf("\n");
     }
     
     boolean nextIsAdditiveOperator(Scanner input){
@@ -72,101 +84,81 @@ public class Main {
     	return nextCharIs(input, '*', true);
     }
     
-    void program(Scanner input) throws APException{
-    	while(input.hasNextLine()){
-    		statement(input);
-    	}
-    	eof(input);
+    char letter(Scanner input) throws APException{
+    	if(!nextCharIsLetter(input, false)){
+			throw new APException("Error: Expected a letter");
+		}
+    	return nextChar(input, false);
     }
     
-    void statement(Scanner input) throws APException{
-    	String statement=input.nextLine();
-    	Scanner statementScanner=new Scanner(statement);
-    	
-    	if(nextCharIsLetter(statementScanner, true)){
-    		assignment(statementScanner);
-    	}else if(nextCharIs(statementScanner, '?', true)){
-    		printStatement(statementScanner);
-    	}else if(nextCharIs(statementScanner, '/', true)){
-    		comment(statementScanner);
-    	}else{
-    		throw new APException("Error: Misformed statement. A statement has to begin with a '?', '/' or an identifier");
+    String notZero(Scanner input) throws APException{
+		if(!input.hasNext("[1-9]")){
+			throw new APException("Error: Expected a number (1-9)");
+		}
+		return "" + nextChar(input, false);
+	}
+    
+    String zero(Scanner input) throws APException{
+    	if(!nextCharIs(input, '0', false)){
+    		throw new APException("Error: Expected a zero (0)");
     	}
+    	return "" + nextChar(input, false);
     }
     
-    void assignment(Scanner input) throws APException{
-    	Identifier key=identifier(input);
-    	try{
-    		character(input, '=');
-    	}catch (APException e){
-    		throw new APException("Error: Expected equals sign (=)");
-    	}
-    	Set<BigInteger> value;
-		value=expression(input);
-		eoln(input);
-		calculatorHashMap.put(key, value);
+    String number(Scanner input) throws APException{
+    	return nextCharIs(input, '0' ,false) ? zero(input) : notZero(input);
     }
     
-    void printStatement(Scanner input) throws APException{
-    	character(input, '?');
-    	Set<BigInteger> set=expression(input);
-    	eoln(input);
-    	printSet(set);
+    String positiveNumber(Scanner input) throws APException{
+    	StringBuffer result=new StringBuffer();
+    	result.append(notZero(input));
+    	while(nextCharIsDigit(input, false)){
+    		result.append(number(input));
+    	}
+    	return result.toString();
     }
     
-    void comment(Scanner input) throws APException{
-    	character(input, '/');
-    	if(input.hasNextLine()){
-    		input.nextLine();
-    	}
-    	eoln(input);
+    BigInteger naturalNumber(Scanner input) throws APException{
+    	return nextCharIs(input, '0', true) ? new BigInteger(zero(input)):new BigInteger(positiveNumber(input));
     }
     
-    Identifier identifier(Scanner input) throws APException{
-    	StringBuffer identifier=new StringBuffer();
-    	
-    	if(nextCharIsLetter(input, true)){
-    		identifier.append(letter(input));
-    	}else{
-    		throw new APException("Error: Identifier has to start with a letter");
+    char multiplicativeOperator(Scanner input) throws APException{
+    	if(!nextCharIs(input, '*', true)){
+    		throw new APException("Error: Expected a multiplicative operator sign (*)");
     	}
-    	while(nextCharIsLetter(input, false) || nextCharIsDigit(input, false)){
-    		if(nextCharIsLetter(input, false)){
-    			identifier.append(letter(input));
-    		}else{
-    			identifier.append(number(input));
-    		}
-    	}
-    	return new Identifier(identifier.toString());
+    	return nextChar(input, true);
     }
-
-    Set<BigInteger> expression(Scanner input) throws APException{
-    	Set<BigInteger> result=term(input);
-    	
-    	while(nextIsAdditiveOperator(input)){
-    		char operation=additiveOperator(input);
-    		Set<BigInteger> temp=term(input);
-    		if(operation=='+'){
-    			result=(Set<BigInteger>) result.union(temp);
-    		}
-    		else if(operation=='|'){
-    			result=(Set<BigInteger>) result.symmetricDifference(temp);
-    		}
-    		else if(operation=='-'){
-    			result=(Set<BigInteger>) result.complement(temp);
+    
+    char additiveOperator(Scanner input) throws APException{
+    	if(!nextCharIs(input, '+', true) && !nextCharIs(input, '|', true) && !nextCharIs(input, '-', true)){
+    		throw new APException("Error: Expected additive operator sign (+, | or -)");
+    	}
+    	return nextChar(input, true);
+    }
+    
+    Set<BigInteger> rowNaturalNumbers(Scanner input) throws APException{
+    	Set<BigInteger> result=new Set<BigInteger>();
+    	if(nextCharIsDigit(input, true)){
+    		result.add(naturalNumber(input));
+    		while(nextCharIs(input, ',', true)){
+    			character(input, ',');
+    			result.add(naturalNumber(input));
     		}
     	}
     	return result;
     }
     
-    Set<BigInteger> term(Scanner input) throws APException{
-    	Set<BigInteger> result=factor(input);
-    	
-    	while(nextIsMultiplicativeOperator(input)){
-    		multiplicativeOperator(input);
-    		Set<BigInteger>temp=factor(input);
-    		result=(Set<BigInteger>) result.intersection(temp);
-    	}
+    Set<BigInteger> set(Scanner input) throws APException{
+    	character(input, '{');
+    	Set<BigInteger> result=rowNaturalNumbers(input);
+    	character(input, '}');
+    	return result;
+    }
+    
+    Set<BigInteger> complexFactor(Scanner input) throws APException{
+    	character(input, '(');
+    	Set<BigInteger> result=expression(input);
+    	character(input, ')');
     	return result;
     }
     
@@ -191,93 +183,112 @@ public class Main {
     	return result;
     }
     
-    Set<BigInteger> complexFactor(Scanner input) throws APException{
-    	character(input, '(');
-    	Set<BigInteger> result=expression(input);
-    	character(input, ')');
+    Set<BigInteger> term(Scanner input) throws APException{
+    	Set<BigInteger> result=factor(input);
+    	
+    	while(nextIsMultiplicativeOperator(input)){
+    		multiplicativeOperator(input);
+    		Set<BigInteger>temp=factor(input);
+    		result=(Set<BigInteger>) result.intersection(temp);
+    	}
     	return result;
     }
     
-    Set<BigInteger> set(Scanner input) throws APException{
-    	character(input, '{');
-    	Set<BigInteger> result=rowNaturalNumbers(input);
-    	character(input, '}');
-    	return result;
-    }
-    
-    Set<BigInteger> rowNaturalNumbers(Scanner input) throws APException{
-    	Set<BigInteger> result=new Set<BigInteger>();
-    	if(nextCharIsDigit(input, true)){
-    		result.add(naturalNumber(input));
-    		while(nextCharIs(input, ',', true)){
-    			character(input, ',');
-    			result.add(naturalNumber(input));
+    Set<BigInteger> expression(Scanner input) throws APException{
+    	Set<BigInteger> result=term(input);
+    	
+    	while(nextIsAdditiveOperator(input)){
+    		char operation=additiveOperator(input);
+    		Set<BigInteger> temp=term(input);
+    		if(operation=='+'){
+    			result=(Set<BigInteger>) result.union(temp);
+    		}
+    		else if(operation=='|'){
+    			result=(Set<BigInteger>) result.symmetricDifference(temp);
+    		}
+    		else if(operation=='-'){
+    			result=(Set<BigInteger>) result.complement(temp);
     		}
     	}
     	return result;
     }
     
-    char additiveOperator(Scanner input) throws APException{
-    	if(!nextCharIs(input, '+', true) && !nextCharIs(input, '|', true) && !nextCharIs(input, '-', true)){
-    		throw new APException("Error: Expected additive operator sign (+, | or -)");
+    Identifier identifier(Scanner input) throws APException{
+    	StringBuffer identifier=new StringBuffer();
+    	
+    	if(nextCharIsLetter(input, true)){
+    		identifier.append(letter(input));
+    	}else{
+    		throw new APException("Error: Identifier has to start with a letter");
     	}
-    	return nextChar(input, true);
-    }
-    
-    char multiplicativeOperator(Scanner input) throws APException{
-    	if(!nextCharIs(input, '*', true)){
-    		throw new APException("Error: Expected a multiplicative operator sign (*)");
+    	while(nextCharIsLetter(input, false) || nextCharIsDigit(input, false)){
+    		if(nextCharIsLetter(input, false)){
+    			identifier.append(letter(input));
+    		}else{
+    			identifier.append(number(input));
+    		}
     	}
-    	return nextChar(input, true);
+    	return new Identifier(identifier.toString());
     }
     
-    BigInteger naturalNumber(Scanner input) throws APException{
-    	return nextCharIs(input, '0', true) ? new BigInteger(zero(input)):new BigInteger(positiveNumber(input));
-    }
-    
-    String positiveNumber(Scanner input) throws APException{
-    	StringBuffer result=new StringBuffer();
-    	result.append(notZero(input));
-    	while(nextCharIsDigit(input, false)){
-    		result.append(number(input));
+    void comment(Scanner input) throws APException{
+    	character(input, '/');
+    	if(input.hasNextLine()){
+    		input.nextLine();
     	}
-    	return result.toString();
+    	eoln(input);
     }
     
-    String number(Scanner input) throws APException{
-    	return nextCharIs(input, '0' ,false) ? zero(input) : notZero(input);
+    void printStatement(Scanner input) throws APException{
+    	character(input, '?');
+    	Set<BigInteger> set=expression(input);
+    	eoln(input);
+    	printSet(set);
     }
     
-    String zero(Scanner input) throws APException{
-    	if(!nextCharIs(input, '0', false)){
-    		throw new APException("Error: Expected a zero (0)");
+    void assignment(Scanner input) throws APException{
+    	Identifier key=identifier(input);
+    	try{
+    		character(input, '=');
+    	}catch (APException e){
+    		throw new APException("Error: Expected equals sign (=)");
     	}
-    	return "" + nextChar(input, false);
+    	Set<BigInteger> value;
+		value=expression(input);
+		eoln(input);
+		calculatorHashMap.put(key, value);
     }
     
-	String notZero(Scanner input) throws APException{
-		if(!input.hasNext("[1-9]")){
-			throw new APException("Error: Expected a number (1-9)");
-		}
-		return "" + nextChar(input, false);
-	}
+    void statement(Scanner input) throws APException{
+    	String statement=input.nextLine();
+    	Scanner statementScanner=new Scanner(statement);
+    	
+    	if(nextCharIsLetter(statementScanner, true)){
+    		assignment(statementScanner);
+    	}else if(nextCharIs(statementScanner, '?', true)){
+    		printStatement(statementScanner);
+    	}else if(nextCharIs(statementScanner, '/', true)){
+    		comment(statementScanner);
+    	}else{
+    		throw new APException("Error: Misformed statement. A statement has to begin with a '?', '/' or an identifier");
+    	}
+    }
     
-    char letter(Scanner input) throws APException{
-    	if(!nextCharIsLetter(input, false)){
-			throw new APException("Error: Expected a letter");
-		}
-    	return nextChar(input, false);
+    void program(Scanner input) throws APException{
+    	while(input.hasNextLine()){
+    		statement(input);
+    	}
+    	eof(input);
     }
     
     private void start(){
-    	Scanner programScanner=new Scanner(System.in);
-		calculatorHashMap=new HashMap<Identifier, Set<BigInteger>>();
+    	Scanner programScanner=new Scanner(in);
     	
     	while(programScanner.hasNextLine()){
     		try{
         		program(programScanner);
         	}catch(APException e){
-        		System.out.println(e);
+        		out.println(e);
         	}
     	}
     }
