@@ -19,31 +19,36 @@ public class Main {
 	}
 	
 	char nextChar (Scanner in, boolean skipWhiteSpace){
-		skipWhiteSpace(in,skipWhiteSpace);
+		if(skipWhiteSpace){
+			skipWhiteSpace(in);
+		}
 		return in.next().charAt(0);
 	}
 
 	boolean nextCharIs(Scanner in, char c, boolean skipWhiteSpace){
-		skipWhiteSpace(in,skipWhiteSpace);
+		if(skipWhiteSpace){
+			skipWhiteSpace(in);
+		}
 		return in.hasNext(Pattern.quote(c+""));
 	}
 	
 	boolean nextCharIsDigit (Scanner in, boolean skipWhiteSpace){
-		skipWhiteSpace(in,skipWhiteSpace);
+		if(skipWhiteSpace){
+			skipWhiteSpace(in);
+		}
 		return in.hasNext("[0-9]");
 	}
 	
 	boolean nextCharIsLetter (Scanner in, boolean skipWhiteSpace){
-		skipWhiteSpace(in,skipWhiteSpace);
+		if(skipWhiteSpace){
+			skipWhiteSpace(in);
+		}
 		return in.hasNext("[a-zA-Z]");
 	}
 	
-	void skipWhiteSpace(Scanner in, boolean skipWhiteSpace){
-		in.useDelimiter("");
-		if(skipWhiteSpace){
-			while(in.hasNext("\\s+")){
-				in.next().charAt(0);
-			}
+	void skipWhiteSpace(Scanner in){
+		while(in.hasNext("\\s+")){
+			in.next().charAt(0);
 		}
 	}
 
@@ -262,6 +267,7 @@ public class Main {
     void statement(Scanner input) throws APException{
     	String statement=input.nextLine();
     	Scanner statementScanner=new Scanner(statement);
+    	statementScanner.useDelimiter("");
     	
     	if(nextCharIsLetter(statementScanner, true)){
     		assignment(statementScanner);
